@@ -51,5 +51,20 @@ controller.get("/:id", async (req, res) => {
     }
 });
 
+controller.get("/:id/grades", async (req, res) => {
+
+    try{
+        const studentId = req.params.id;
+
+        const grades = await db.any("SELECT * FROM grades WHERE student_id = $1", [studentId]);
+
+        grades.sort((a,b) => a.date - b.date);
+
+        res.json(grades);
+        
+    }catch(err){
+        res.status(500).send(err);
+    }
+})
 
 module.exports = controller;
