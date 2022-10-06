@@ -56,13 +56,30 @@ controller.get("/:id/grades", async (req, res) => {
     try{
         const studentId = req.params.id;
 
-        const grades = await db.any("SELECT * FROM grades WHERE student_id = $1", [studentId]);
+        const grades = await db.any("SELECT * FROM grades WHERE student_id=$1", [studentId]);
 
         grades.sort((a,b) => a.date - b.date);
 
         res.json(grades);
         
     }catch(err){
+        res.status(500).send(err);
+    }
+});
+
+controller.put("/:id", async (req,res) => {
+    try {
+        const studentId = req.params.id;
+
+        const {firstname, lastname, company, city, skill, pic} = req.body;
+
+        const updatedUser = await db.one("UPDATE students SET firstname=$1, lastname=$2, company=$3, city=$4, skill=$5, pic=$6 WHERE id=$7 RETURNING *", 
+        [firstname, lastname, company, city, skill, pic, studentId]);
+
+        res.json(updatedUser);
+
+    } catch (err) {
+        console.log(err)
         res.status(500).send(err);
     }
 });
