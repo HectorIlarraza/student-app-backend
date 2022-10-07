@@ -67,6 +67,26 @@ controller.get("/:id/grades", async (req, res) => {
     }
 });
 
+controller.post("/", async (req, res) => {
+    
+    try {
+        
+        // get new student body
+        const {firstname, lastname, company, city, skill, pic, email} = req.body;
+
+        // save student to db
+        const student = await db.one("INSERT INTO students (firstname, lastname, company, email, city, skill, pic) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *", 
+        [firstname, lastname, company, email, city, skill, pic]);
+
+        // send a json response returning the new student
+        res.json(student);
+
+    } catch (err) {
+        console.log(err)
+        res.status(500).send(err);
+    }
+});
+
 controller.put("/:id", async (req,res) => {
     try {
         const studentId = req.params.id;
